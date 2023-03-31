@@ -1,0 +1,41 @@
+<p style="color: green"><%= notice %></p>
+
+<div class="container">
+  <div class="row">
+    <div class="col-3" >
+      <p> Hello, <%= current_user.username %></p>
+      <%= render 'form', room: Room.new %>
+      <hr>
+      <% @rooms.each do |room| %>
+        <%= link_to room do %>
+          <div class="card">
+            <div class="card-body">
+              <%= room.name %>
+            </div>
+        <% end %>
+        </div>
+      <% end %>
+    </div>
+    <div class="col-9 bg-light">
+      <% if @room.present? %>
+        
+        <h1 class="text-center"><%= @room.name %></h1><hr/>
+        <div class="message-div overflow-auto">
+          <% @room.messages.each do |message| %>
+            <%= render 'messages/message', message: message%>               
+          <%end%>  
+        </div>      
+
+        <div class="new-message-div">
+          <%= render 'messages/form', message: Message.new, room: @room %>
+        </div>
+        
+      <% end %>
+    </div>
+  </div>
+</div>
+     
+
+
+
+
