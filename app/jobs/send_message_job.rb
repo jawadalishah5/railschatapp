@@ -2,15 +2,27 @@ class SendMessageJob < ApplicationJob
   queue_as :default
 
   def perform(message)
-    
-    html = ApplicationController.render(
-      partial: 'messages/message',
+    # CommentsController.renderer.new(warden: warden).render(...)
+
+    mine = ApplicationController.render(
+      partial: 'messages/mine',
       locals: {
-        message: message
+        message: message,
+        current_user: message.user
       }
     )
 
-    ActionCable.server.broadcast "room_channel_#{message.room_id}", {html: html}
+    other = ApplicationController.render(
+      partial: 'messages/other',
+      locals: {
+        message: message,
+        current_user: message.user
+      }
+    )
+    
+    # current_user = User.find(message.user)
+
+    ActionCable.server.broadcast "room_channel_#{message.room_id}", {mine: mine, other: other, current_user: message.user}
     
   end
 end

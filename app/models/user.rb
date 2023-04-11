@@ -1,10 +1,7 @@
 class User < ApplicationRecord
-    validates_uniqueness_of :username
-    
-    def self.generate
-
-        number = rand.to_s[2..6]
-        username = "User-#{number}"
-        create(username: username)
-    end
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  has_many :messages
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
 end

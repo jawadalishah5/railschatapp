@@ -1,20 +1,46 @@
+import { Subscription } from "@rails/actioncable"
 import consumer from "./consumer"
 
-consumer.subscriptions.create({ channel: "RoomChannel", room_id: 3}, {
-  connected() {
-    console.log("connected ...")
+document.addEventListener("turbo:load", ()=>{
 
-    // Called when the subscription is ready for use on the server
-  },
+  const room_id = document.getElementById("room-id").getAttribute('current_room_id')
 
-  disconnected() {
-    // Called when the subscription has been terminated by the server
-  },
+  consumer.subscriptions.subscriptions.forEach((subscription) => {
+    consumer.subscriptions.remove(subscription)
+  });
 
-  received(data) {
-    // Called when there's incoming data on the websocket for this channel
-    console.log("hello jee")
-    console.log(data)
+  consumer.subscriptions.create({ channel: "RoomChannel", room_id: room_id}, {
+    connected() {
+      console.log("connected to " + room_id )
+  
+      // Called when the subscription is ready for use on the server
+    },
+  
+    disconnected() {
+      // Called when the subscription has been terminated by the server
+    },
+  
+    received(data) {
+      // Called when there's incoming data on the websocket for this channel
+      console.log(data)
+      const messageDiv = document.getElementById("messages");
+  
+      const user_id = document.getElementById("user-id").getAttribute('current_user_id')
+  
+      console.log(user_id)
+      
+      if (data.current_user.id == user_id){
+        messageDiv.innerHTML += data.mine
+        document.getElementById('input-message').value='';
+      }
+      else{
+        messageDiv.innerHTML += data.other
+      }
+  
+      messageDiv.scrollTop = messageDiv.scrollHeight;
+     
+    }
+  });  
 
-  }
-});
+})
+
